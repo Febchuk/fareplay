@@ -89,8 +89,18 @@ LYFT_OPTION = re.compile(r'^([^,]+), Price is \$([\d.]+)(?:, discounted from \$(
 TIER_NAMES = {'ex el': 'XL'}
 
 
+def skip_after_ride_prompt(phone):
+    """After a trip, Uber opens on a 'leave a tip / rate your trip' screen that hides the search bar.
+    Skip it without tipping or rating: only a Skip-style button is ever tapped, never a tip amount."""
+    if re.search(r'Leave a tip|Rate your (ride|trip)|How was your (ride|trip)|pourboire|Notez votre course',
+                 phone.source(), re.I):
+        phone.tap_label(r'^\s*(Skip|Not now|Ignorer|Plus tard)\s*$')
+        time.sleep(2.5)
+
+
 def uber_to_prices(phone, dest, step):
     open_fresh(phone, 'com.ubercab.UberClient'); time.sleep(3.5)
+    skip_after_ride_prompt(phone)
     step('searching'); phone.tap(0.3, 0.22); time.sleep(1.5); phone.type(dest)
     step('picking destination'); pick_result(phone, dest, 0.25, (0.3, 0.30))
     step('reading prices')
