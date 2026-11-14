@@ -1,0 +1,7 @@
+/runs/
+__pycache__/
+*.pyc
+app/node_modules/
+app/.next/
+app/tsconfig.tsbuildinfo
+.DS_Store
